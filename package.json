@@ -1,0 +1,27 @@
+{
+  "name": "ai-resumemaker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix Backend\" \"npm start --prefix Frontend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VanshSUTHAR/Ai-ResumeMaker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VanshSUTHAR/Ai-ResumeMaker/issues"
+  },
+  "homepage": "https://github.com/VanshSUTHAR/Ai-ResumeMaker#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.0"
+  }
+}
