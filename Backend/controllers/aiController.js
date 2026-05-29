@@ -1,13 +1,10 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const genAI = process.env.GOOGLE_API_KEY
+  ? new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
+  : null;
 
 const stripMarkdown = (text) => text.replace(/```json|```/g, '').trim();
-
-const extractPromptSection = (prompt, label) => {
-  const match = prompt.match(new RegExp(`${label}:\\s*([^\\n]+)`, 'i'));
-  return match?.[1]?.trim() || '';
-};
 
 const buildFallbackResponse = (prompt) => {
   const normalized = prompt.toLowerCase();
@@ -84,12 +81,16 @@ const buildFallbackResponse = (prompt) => {
 };
 
 const callAI = async (prompt, max_tokens = 800) => {
+  if (!genAI) {
+    return buildFallbackResponse(prompt);
+  }
+
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
     generationConfig: { maxOutputTokens: max_tokens, temperature: 0.7 }
   });
   const result = await model.generateContent(prompt);
-  return result.response.text();
+  return result?.response?.text?.() || buildFallbackResponse(prompt);
 };
 
 exports.generateSummary = async (req, res) => {
@@ -190,6 +191,62 @@ exports.generateLinkedInBio = async (req, res) => {
     const prompt = `Write a compelling LinkedIn "About" section (150-200 words) for ${name || 'a developer'}, ${role || 'Software Developer'}, with ${experience || '2 years'} experience. Skills: ${skills?.join(', ')}. Achievements: ${achievements?.join(', ')}. Use first person, include keywords, and end with a call-to-action. Output only the bio.`;
     const result = await callAI(prompt, 400);
     res.json({ result });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Tailor a resume to a specific job description
+exports.tailorResume = async (req, res) => {
+  try {
+    const { resumeText, jobDescription } = req.body;
+    if (!resumeText || !jobDescription) return res.status(400).json({ message: 'resumeText and jobDescription are required' });
+
+    const prompt = `Tailor the following resume to the job description. Resume:\n${resumeText}\n\nJob Description:\n${jobDescription}\n\nReturn: 1) A tailored bullet list of top 6 experience bullets optimized for the job (each starting with •), 2) a short 2-sentence summary customized to the job. Output only text.`;
+    const result = await callAI(prompt, 900);
+    res.json({ result });
+  } catch (err) {
+    const fallback = buildFallbackResponse(req.body.jobDescription || '');
+    res.json({ result: fallback, fallback: true, warning: err.message });
+  }
+};
+
+// Extract skills from resume text and return JSON array
+exports.extractSkills = async (req, res) => {
+  try {
+    const { resumeText } = req.body;
+    if (!resumeText) return res.status(400).json({ message: 'resumeText is required' });
+
+    const prompt = `Extract a concise JSON array of skills and technologies mentioned in this resume. Resume:\n${resumeText}\n\nReturn only a JSON array like ["React", "Node.js", "MongoDB"]`;
+    const raw = await callAI(prompt, 400);
+    try {
+      const json = JSON.parse(stripMarkdown(raw));
+      res.json({ result: json });
+    } catch {
+      // simple fallback: pick capitalized tokens likely to be skills
+      const fallback = Array.from(new Set((resumeText.match(/\b[A-Z][A-Za-z0-9+.#-]{1,}\b/g) || []).slice(0, 40)));
+      res.json({ result: fallback });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Quantify achievement bullets: accept an array of bullets and return improved bullets
+exports.quantifyAchievements = async (req, res) => {
+  try {
+    const { bullets } = req.body;
+    if (!Array.isArray(bullets) || bullets.length === 0) return res.status(400).json({ message: 'bullets array is required' });
+
+    const prompt = `Rewrite the following resume bullets to be achievement-focused and, where possible, add quantifiable metrics. Return as a JSON array of rewritten bullets. Bullets:\n${bullets.map(b => `- ${b}`).join('\n')}`;
+    const raw = await callAI(prompt, 800);
+    try {
+      const json = JSON.parse(stripMarkdown(raw));
+      res.json({ result: json });
+    } catch {
+      // fallback: return original bullets unchanged
+      res.json({ result: bullets });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
