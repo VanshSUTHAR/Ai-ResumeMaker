@@ -161,64 +161,10 @@ const css = `
   ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 99px; }
   button { font-family: 'Plus Jakarta Sans', sans-serif; }
   #resume-preview { background: #fff; color: #1e293b; width: 210mm; min-height: 297mm; margin: 0 auto; overflow: hidden; }
-  .builder-shell { display: flex; height: 100vh; overflow: hidden; }
-  .builder-sidebar { width: 240px; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-  .builder-main { flex: 1; overflow: auto; padding: 36px; background: rgba(0,0,0,0.02); }
-  .builder-content { max-width: 800px; margin: 0 auto; }
-  .dashboard-actions { display: flex; gap: 14px; align-items: center; }
-  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
-  .two-column-form { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
-  .three-column-form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-  .template-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px; }
-  .export-actions { display: flex; gap: 12px; margin-bottom: 28px; }
-  .preview-frame { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #e2e8f0; padding: 32px 0; }
-  .preview-scale { transform: scale(0.75); transform-origin: top center; width: 100%; margin: 0 auto; min-height: 400px; }
-  .section-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .button-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .auth-panel {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--card) 92%, white 8%), var(--card));
-    border: 1px solid var(--border-light);
-    border-radius: 22px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.28);
-  }
-  .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
   @media print {
     body * { visibility: hidden; }
     #resume-preview, #resume-preview * { visibility: visible; }
     #resume-preview { position: fixed; left: 0; top: 0; width: 100%; box-shadow: none; margin: 0; }
-  }
-  @media (max-width: 900px) {
-    .builder-shell { flex-direction: column !important; height: auto !important; min-height: 100vh; overflow: visible !important; }
-    .builder-sidebar { width: 100% !important; max-height: none; border-right: none !important; border-bottom: 1px solid var(--border); }
-    .builder-sidebar nav { flex-direction: row !important; overflow-x: auto !important; padding: 10px !important; gap: 8px !important; }
-    .builder-sidebar nav button { width: auto !important; flex: 0 0 auto; white-space: nowrap; }
-    .builder-sidebar > div:first-child { padding: 14px 16px !important; }
-    .builder-sidebar > div:last-child { flex-direction: row !important; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-    .builder-sidebar > div:last-child > div:last-child { flex: 1 1 220px; }
-    .builder-main { padding: 24px 16px 40px !important; overflow: visible !important; }
-    .dashboard-actions { width: 100%; flex-wrap: wrap; }
-    .dashboard-actions > * { flex: 1 1 auto; }
-    .template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-    .preview-frame { margin: 0 -16px; border-radius: 0 !important; padding: 20px 0 !important; overflow-x: auto !important; }
-    .preview-scale { width: 210mm !important; transform: scale(0.58) !important; transform-origin: top left !important; margin-left: 12px !important; min-height: 620px !important; }
-  }
-  @media (max-width: 640px) {
-    body { overflow-x: hidden; }
-    .app-shell { min-height: 100svh; }
-    .mobile-stack { flex-direction: column !important; align-items: stretch !important; }
-    .mobile-stack > * { width: 100%; }
-    .form-grid, .two-column-form, .three-column-form { grid-template-columns: 1fr !important; }
-    .template-grid { grid-template-columns: 1fr !important; }
-    .export-actions { flex-direction: column; }
-    .export-actions button { justify-content: center; }
-    .section-toolbar { align-items: stretch; }
-    .section-toolbar > * { width: 100%; }
-    .button-row > * { flex: 1 1 auto; justify-content: center; }
-    .builder-main { padding: 20px 12px 32px !important; }
-    .builder-content { max-width: 100%; }
-    .builder-sidebar > div:last-child { padding: 12px !important; }
-    .preview-frame { margin: 0 -12px; }
-    .preview-scale { transform: scale(0.43) !important; min-height: 500px !important; }
   }
 `;
 
@@ -248,11 +194,11 @@ function Btn({ children, onClick, variant = "primary", size = "md", disabled, st
   );
 }
 
-function Card({ children, style: sx, className }) {
+function Card({ children, style: sx }) {
   return (
-    <div className={className} style={{
+    <div style={{
       background: "var(--card)", border: "1px solid var(--border)",
-      borderRadius: 12, padding: 28, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", ...sx
+      borderRadius: 16, padding: 28, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", ...sx
     }}>{children}</div>
   );
 }
@@ -466,7 +412,7 @@ function ModernTemplate({ data }) {
 
 // 2. MINIMAL — Clean single column
 function MinimalTemplate({ data }) {
-  const { personalInfo: p, experience, skills } = data;
+  const { personalInfo: p, education, experience, skills, projects } = data;
   return (
     <div id="resume-preview" style={{ padding: "60px", fontFamily: "'DM Sans', sans-serif", color: "#1c1917" }}>
       <header style={{ borderBottom: "1px solid #e7e5e4", paddingBottom: 24, marginBottom: 32 }}>
@@ -504,7 +450,7 @@ function MinimalTemplate({ data }) {
 
 // 3. PROFESSIONAL — Sidebar layout
 function ProfessionalTemplate({ data }) {
-  const { personalInfo: p, experience = [], education = [], skills = [] } = data;
+  const { personalInfo: p, experience = [], education = [], skills = [], certifications = [] } = data;
   return (
     <div id="resume-preview" style={{ display: "grid", gridTemplateColumns: "220px 1fr", minHeight: "297mm", fontFamily: "'Inter', sans-serif" }}>
       <aside style={{ background: "#1e3a5f", color: "#fff", padding: "40px 24px" }}>
@@ -618,7 +564,7 @@ function CreativeTemplate({ data }) {
 
 // 5. CLASSIC — Serif, traditional
 function ClassicTemplate({ data }) {
-  const { personalInfo: p, education = [], experience = [] } = data;
+  const { personalInfo: p, education = [], experience = [], skills = [] } = data;
   return (
     <div id="resume-preview" style={{ fontFamily: "'Crimson Pro', serif", color: "#1a1a1a", padding: "52px 60px" }}>
       <header style={{ textAlign: "center", paddingBottom: 24, marginBottom: 28, borderBottom: "2px solid #1a1a1a" }}>
@@ -659,7 +605,7 @@ function ClassicTemplate({ data }) {
 
 // 6. ELEGANT — Gold accent, luxury feel
 function ElegantTemplate({ data }) {
-  const { personalInfo: p, experience = [], education = [], skills = [] } = data;
+  const { personalInfo: p, experience = [], education = [], skills = [], certifications = [] } = data;
   return (
     <div id="resume-preview" style={{ fontFamily: "'Playfair Display', 'Georgia', serif", background: "#fafaf8" }}>
       <div style={{ background: "#1a1a1a", padding: "48px 56px", color: "#faf8f4" }}>
@@ -728,11 +674,11 @@ function TechTemplate({ data }) {
       <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 40 }}>
         <div>
           {p.summary && <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 8, fontFamily: "'Courier New', monospace" }}>{'/* about */'}</div>
+            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 8, fontFamily: "'Courier New', monospace" }}>/* about */</div>
             <p style={{ fontSize: 13, lineHeight: 1.7, color: "#8b949e" }}>{p.summary}</p>
           </div>}
           {experience?.length > 0 && <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>{'/* experience */'}</div>
+            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>/* experience */</div>
             {experience.map((e, i) => (
               <div key={i} style={{ marginBottom: 20, paddingLeft: 16, borderLeft: "2px solid #21262d" }}>
                 <div style={{ fontWeight: 700, fontSize: 14, color: "#e6edf3" }}>{e.position}</div>
@@ -742,7 +688,7 @@ function TechTemplate({ data }) {
             ))}
           </div>}
           {projects?.length > 0 && <div>
-            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>{'/* projects */'}</div>
+            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>/* projects */</div>
             {projects.map((pr, i) => (
               <div key={i} style={{ marginBottom: 14, padding: "12px 14px", background: "#161b22", borderRadius: 6, border: "1px solid #21262d" }}>
                 <div style={{ fontWeight: 700, fontSize: 13 }}>{pr.name}</div>
@@ -753,7 +699,7 @@ function TechTemplate({ data }) {
         </div>
         <div>
           {skills?.length > 0 && <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>{'/* skills */'}</div>
+            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>/* skills */</div>
             {skills.map((s, i) => (
               <div key={i} style={{ marginBottom: 14 }}>
                 {s.category && <div style={{ fontSize: 11, color: "#f8849a", marginBottom: 6, fontFamily: "'Courier New', monospace" }}>{s.category}:</div>}
@@ -764,7 +710,7 @@ function TechTemplate({ data }) {
             ))}
           </div>}
           {education?.length > 0 && <div>
-            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>{'/* education */'}</div>
+            <div style={{ fontSize: 11, color: "#7ee787", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>/* education */</div>
             {education.map((ed, i) => (
               <div key={i} style={{ marginBottom: 12, padding: "10px 12px", background: "#161b22", border: "1px solid #21262d", borderRadius: 6 }}>
                 <div style={{ fontSize: 12, fontWeight: 600 }}>{ed.degree}</div>
@@ -780,7 +726,7 @@ function TechTemplate({ data }) {
 
 // 8. COMPACT — Tight layout, fits max content
 function CompactTemplate({ data }) {
-  const { personalInfo: p, experience = [], education = [], skills = [], projects = [] } = data;
+  const { personalInfo: p, experience = [], education = [], skills = [], projects = [], certifications = [] } = data;
   const allSkills = skills.flatMap(s => s.items || []);
   return (
     <div id="resume-preview" style={{ fontFamily: "'Inter', sans-serif", padding: "32px 40px", background: "#fff", color: "#111827" }}>
@@ -1051,7 +997,7 @@ function AuthScreen({ onAuth, theme, setTheme }) {
           <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", marginTop: 8 }}>ResumeAI</h1>
           <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 6 }}>Build stunning resumes with 10 professional templates.</p>
         </div>
-        <Card style={{ padding: 30 }} className="auth-panel">
+        <Card>
           <div style={{ display: "flex", marginBottom: 24, background: "var(--card-2)", borderRadius: 10, padding: 4, border: "1px solid var(--border)" }}>
             {["login", "register"].map(m => (
               <button key={m} onClick={() => setMode(m)} style={{
@@ -1099,7 +1045,7 @@ function Dashboard({ user, onEdit, onNew, onLogout, theme, setTheme }) {
             <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em" }}>✦ Workspace</h1>
             <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>Hello, {user.name} — manage your resumes.</p>
           </div>
-          <div className="dashboard-actions" style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
             <ThemeSwitcher theme={theme} setTheme={setTheme} compact />
             <Btn onClick={onNew} variant="ai">✦ New Resume</Btn>
             <Btn onClick={onLogout} variant="ghost" size="sm">Log Out</Btn>
@@ -1114,7 +1060,7 @@ function Dashboard({ user, onEdit, onNew, onLogout, theme, setTheme }) {
             <Btn onClick={onNew} variant="ai">Create Resume</Btn>
           </Card>
         ) : (
-          <div className="dashboard-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
             {resumes.map(resume => {
               const tpl = TEMPLATE_LIST.find(t => t.id === resume.template) || TEMPLATE_LIST[0];
               return (
@@ -1197,12 +1143,11 @@ function ResumeBuilder({ resume: initResume, onSave, onExit, theme, setTheme }) 
     { id: "projects", label: "Projects", icon: "🚀" },
     { id: "certifications", label: "Certifications", icon: "🏆" },
     { id: "preview", label: "Preview & Export", icon: "👁" },
-    { id: "ai", label: "AI Enhance", icon: "🤖" },
   ];
 
   return (
-    <div className="app-shell builder-shell" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      <aside className="builder-sidebar" style={{ width: 240, background: "var(--card)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
+    <div className="app-shell" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      <aside style={{ width: 240, background: "var(--card)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
         <div style={{ padding: "20px 16px 14px", borderBottom: "1px solid var(--border)" }}>
           <div style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.02em" }}>✦ ResumeAI</div>
           <input value={resume.title} onChange={e => update("title", e.target.value)} style={{ marginTop: 10, fontSize: 13, height: 36 }} placeholder="Resume title" />
@@ -1230,11 +1175,10 @@ function ResumeBuilder({ resume: initResume, onSave, onExit, theme, setTheme }) 
         </div>
       </aside>
 
-      <main className="builder-main" style={{ flex: 1, overflow: "auto", padding: "36px", background: "rgba(0,0,0,0.02)" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto" }} className="fadeUp builder-content">
+      <main style={{ flex: 1, overflow: "auto", padding: "36px", background: "rgba(0,0,0,0.02)" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }} className="fadeUp">
           {activeSection === "personal" && <PersonalSection resume={resume} update={update} />}
           {activeSection === "summary" && <SummarySection resume={resume} update={update} />}
-          {activeSection === "ai" && <AIEnhanceSection resume={resume} update={update} />}
           {activeSection === "experience" && <ExperienceSection resume={resume} update={update} />}
           {activeSection === "education" && <EducationSection resume={resume} update={update} />}
           {activeSection === "skills" && <SkillsSection resume={resume} update={update} />}
@@ -1266,7 +1210,7 @@ function PersonalSection({ resume, update }) {
     <div>
       <SectionHeader icon="👤" title="Personal Info" desc="Your contact details and identity." />
       <Card>
-        <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18 }}>
           <Field label="Full Name"><input placeholder="John Doe" {...f("fullName")} /></Field>
           <Field label="Job Title"><input placeholder="Senior Full-Stack Engineer" {...f("jobTitle")} /></Field>
           <Field label="Email"><input type="email" placeholder="john@domain.com" {...f("email")} /></Field>
@@ -1313,84 +1257,6 @@ function SummarySection({ resume, update }) {
   );
 }
 
-function AIEnhanceSection({ resume, update }) {
-  const [jobDesc, setJobDesc] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const callApi = async (path, body) => {
-    const res = await fetch(`/api/ai/${path}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
-  };
-
-  const tailor = async () => {
-    setLoading(true);
-    try {
-      const resumeText = JSON.stringify(resume);
-      const { result } = await callApi('tailor', { resumeText, jobDescription: jobDesc });
-      ToastCtx.notify('Tailored resume received', 'info');
-      // place tailored bullets in summary for user to review
-      const currentSummary = resume.personalInfo?.summary || '';
-      update('personalInfo.summary', `${currentSummary}${currentSummary ? '\n\n' : ''}Tailored:\n${result}`);
-    } catch (e) { ToastCtx.notify('Tailor failed', 'error'); }
-    finally { setLoading(false); }
-  };
-
-  const extract = async () => {
-    setLoading(true);
-    try {
-      const resumeText = JSON.stringify(resume);
-      const { result } = await callApi('extract-skills', { resumeText });
-      ToastCtx.notify('Skills extracted');
-      // merge into skills section as a single group
-      update('skills', [{ id: 'ai-extracted', category: 'AI Extracted', items: Array.isArray(result) ? result : [] }]);
-    } catch (e) { ToastCtx.notify('Extract failed', 'error'); }
-    finally { setLoading(false); }
-  };
-
-  const quantify = async () => {
-    setLoading(true);
-    try {
-      const bullets = [];
-      const idxMap = [];
-      (resume.experience || []).forEach((exp, i) => {
-        (exp.points || []).forEach(pt => { idxMap.push(i); bullets.push(pt); });
-      });
-      if (bullets.length === 0) { ToastCtx.notify('No bullets to quantify', 'info'); setLoading(false); return; }
-      const { result } = await callApi('quantify', { bullets });
-      // result expected as array; map back into resume.experience
-      const rewritten = Array.isArray(result) ? result : JSON.parse(result);
-      const nextExp = (resume.experience || []).map(e => ({ ...e, points: [] }));
-      rewritten.forEach((b, idx) => {
-        const expIdx = idxMap[idx];
-        if (!nextExp[expIdx]) nextExp[expIdx] = { points: [] };
-        nextExp[expIdx].points.push(b);
-      });
-      update('experience', nextExp);
-      ToastCtx.notify('Bullets quantified');
-    } catch (e) { ToastCtx.notify('Quantify failed', 'error'); }
-    finally { setLoading(false); }
-  };
-
-  return (
-    <div>
-      <SectionHeader icon="🤖" title="AI Enhance" desc="Job tailoring, skill extraction, and achievement quantification." />
-      <Card>
-        <Field label="Job Description (paste here)">
-          <textarea value={jobDesc} onChange={e => setJobDesc(e.target.value)} placeholder="Paste the job description to tailor the resume to..." />
-        </Field>
-        <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
-          <Btn onClick={tailor} variant="ai" loading={loading}>Tailor to Job</Btn>
-          <Btn onClick={extract} variant="secondary" loading={loading}>Extract Skills</Btn>
-          <Btn onClick={quantify} variant="success" loading={loading}>Quantify Achievements</Btn>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
 function ExperienceSection({ resume, update }) {
   const items = resume.experience || [];
   const add = () => update("experience", [...items, { company: "", position: "", location: "", startDate: "", endDate: "", current: false, points: [""] }]);
@@ -1409,22 +1275,9 @@ function ExperienceSection({ resume, update }) {
         <Card key={i} style={{ marginBottom: 18 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
             <h4 style={{ fontWeight: 700 }}>Experience #{i + 1}</h4>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Btn onClick={async () => {
-                try {
-                  ToastCtx.notify('Generating bullets...', 'info');
-                  const prompt = `Rewrite and improve the following role bullets to be achievement-focused and, where possible, add quantifiable metrics. Role: ${exp.position || ''} at ${exp.company || ''}. Current bullets: ${(exp.points || []).join(' | ')}. Return 4 concise bullets each starting with •.`;
-                  const result = await askClaude(prompt);
-                  // try to split into lines and remove leading bullets
-                  const lines = result.split(/\r?\n/).map(l => l.replace(/^\s*[-•*\d.)]+\s*/, '').trim()).filter(Boolean).slice(0,4);
-                  const arr = [...items]; arr[i] = { ...arr[i], points: lines }; update('experience', arr);
-                  ToastCtx.notify('Bullets generated');
-                } catch (e) { ToastCtx.notify('AI failed', 'error'); }
-              }} variant="ai" size="sm">✦ AI</Btn>
-              <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
-            </div>
+            <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
           </div>
-          <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
             <Field label="Company"><input placeholder="Acme Corp" value={exp.company} onChange={e => set(i, "company", e.target.value)} /></Field>
             <Field label="Position"><input placeholder="Senior Developer" value={exp.position} onChange={e => set(i, "position", e.target.value)} /></Field>
             <Field label="Start Date"><input placeholder="Jan 2022" value={exp.startDate} onChange={e => set(i, "startDate", e.target.value)} /></Field>
@@ -1463,7 +1316,7 @@ function EducationSection({ resume, update }) {
             <h4 style={{ fontWeight: 700 }}>Education #{i + 1}</h4>
             <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
           </div>
-          <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
             <Field label="Institution"><input placeholder="Gujarat Technological University" value={ed.institution} onChange={e => set(i, "institution", e.target.value)} /></Field>
             <Field label="Degree"><input placeholder="B.E. Computer Science" value={ed.degree} onChange={e => set(i, "degree", e.target.value)} /></Field>
             <Field label="Start Year"><input placeholder="2020" value={ed.startDate} onChange={e => set(i, "startDate", e.target.value)} /></Field>
@@ -1482,33 +1335,11 @@ function SkillsSection({ resume, update }) {
   const remove = (i) => update("skills", items.filter((_, j) => j !== i));
   const set = (i, k, v) => { const arr = [...items]; arr[i] = { ...arr[i], [k]: v }; update("skills", arr); };
 
-  const generateSkillsAI = async () => {
-    try {
-      ToastCtx.notify('Generating skills...', 'info');
-      const title = resume.personalInfo?.jobTitle || 'Software Developer';
-      const exp = (resume.experience || []).map(e => e.position + ' at ' + e.company).slice(0,6).join('; ');
-      const prompt = `Suggest a comprehensive, ATS-optimized skills list for a ${title}. Existing experience: ${exp}. Return JSON object with categories as keys and arrays of skills as values.`;
-      const raw = await askClaude(prompt);
-      let parsed = null;
-      try { parsed = JSON.parse(raw.replace(/```json|```/g, '').trim()); } catch { parsed = null; }
-      if (parsed && typeof parsed === 'object') {
-        const out = Object.entries(parsed).map(([cat, arr]) => ({ category: cat, items: Array.isArray(arr) ? arr : [] }));
-        update('skills', out);
-        ToastCtx.notify('Skills generated');
-      } else {
-        ToastCtx.notify('AI returned unexpected format', 'error');
-      }
-    } catch (e) { ToastCtx.notify('AI error', 'error'); }
-  };
-
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <SectionHeader icon="⚡" title="Skills" desc="Technologies and competencies." />
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Btn onClick={generateSkillsAI} variant="ai" size="sm">✦ AI Generate</Btn>
-          <Btn onClick={add} variant="secondary" size="sm">+ Add Category</Btn>
-        </div>
+        <Btn onClick={add} variant="secondary" size="sm">+ Add Category</Btn>
       </div>
       {items.map((sk, i) => (
         <Card key={i} style={{ marginBottom: 14 }}>
@@ -1516,7 +1347,7 @@ function SkillsSection({ resume, update }) {
             <span style={{ fontWeight: 600, fontSize: 14 }}>Category #{i + 1}</span>
             <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
           </div>
-          <div className="two-column-form" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 14 }}>
             <input placeholder="e.g. Frontend" value={sk.category} onChange={e => set(i, "category", e.target.value)} />
             <input placeholder="React, Next.js, TailwindCSS (comma-separated)" value={sk.items?.join(", ")} onChange={e => set(i, "items", e.target.value.split(",").map(x => x.trim()).filter(Boolean))} />
           </div>
@@ -1536,40 +1367,13 @@ function ProjectsSection({ resume, update }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <SectionHeader icon="🚀" title="Projects" desc="Notable work and side projects." />
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Btn onClick={add} variant="secondary" size="sm">+ Add Project</Btn>
-          <Btn onClick={async () => {
-            // generate for newest project if exists
-            if ((resume.projects || []).length === 0) { ToastCtx.notify('No project to generate for', 'info'); return; }
-            const i = (resume.projects || []).length - 1;
-            // reuse per-project generator
-            const pr = resume.projects[i];
-            try {
-              ToastCtx.notify('Generating project description...', 'info');
-              const prompt = `Generate 3 concise bullet points describing the project named "${pr.name || 'Project'}" built with ${pr.techStack?.join(', ') || 'typical web stack'}. Mention your role and technical impact.`;
-              const result = await askClaude(prompt);
-              update(`projects.${i}.description`, result.trim());
-              ToastCtx.notify('Project description generated');
-            } catch (e) { ToastCtx.notify('AI failed', 'error'); }
-          }} variant="ai" size="sm">✦ AI New Project</Btn>
-        </div>
+        <Btn onClick={add} variant="secondary" size="sm">+ Add Project</Btn>
       </div>
       {items.map((pr, i) => (
         <Card key={i} style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
             <h4 style={{ fontWeight: 700 }}>Project #{i + 1}</h4>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Btn onClick={async () => {
-                try {
-                  ToastCtx.notify('Generating project description...', 'info');
-                  const prompt = `Generate 3 concise bullet points describing the project named "${pr.name || 'Project'}" built with ${pr.techStack?.join(', ') || 'typical web stack'}. Mention your role and technical impact.`;
-                  const result = await askClaude(prompt);
-                  set(i, 'description', result.trim());
-                  ToastCtx.notify('Project description generated');
-                } catch (e) { ToastCtx.notify('AI failed', 'error'); }
-              }} variant="ai" size="sm">✦ AI</Btn>
-              <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
-            </div>
+            <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <Field label="Project Name"><input placeholder="My Awesome App" value={pr.name} onChange={e => set(i, "name", e.target.value)} /></Field>
@@ -1600,7 +1404,7 @@ function CertificationsSection({ resume, update }) {
             <span style={{ fontWeight: 600 }}>Cert #{i + 1}</span>
             <Btn onClick={() => remove(i)} variant="danger" size="sm">Remove</Btn>
           </div>
-          <div className="three-column-form" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             <input placeholder="AWS Solutions Architect" value={c.name} onChange={e => set(i, "name", e.target.value)} />
             <input placeholder="Amazon Web Services" value={c.issuer} onChange={e => set(i, "issuer", e.target.value)} />
             <input placeholder="Dec 2024" value={c.date} onChange={e => set(i, "date", e.target.value)} />
@@ -1635,7 +1439,7 @@ function PreviewSection({ resume, update }) {
       <SectionHeader icon="👁" title="Preview & Export" desc="Choose a template and export your resume." />
       
       {/* Template Grid */}
-        <div className="template-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 24 }}>
         {TEMPLATE_LIST.map(t => (
           <button key={t.id} onClick={() => update("template", t.id)} style={{
             padding: "12px 8px", borderRadius: 12, border: `2px solid ${resume.template === t.id ? "var(--accent-light)" : "var(--border)"}`,
@@ -1652,14 +1456,14 @@ function PreviewSection({ resume, update }) {
       </div>
 
       {/* Export buttons */}
-      <div className="export-actions" style={{ display: "flex", gap: 12, marginBottom: 28 }}>
+      <div style={{ display: "flex", gap: 12, marginBottom: 28 }}>
         <Btn onClick={() => window.print()} variant="ai">🖨 Print</Btn>
         <Btn onClick={handleDownload} variant="secondary">⬇ Export PDF</Btn>
       </div>
 
       {/* Preview */}
-      <div className="preview-frame" style={{ border: "1px solid var(--border)", borderRadius: 16, overflow: "hidden", background: "#e2e8f0", padding: "32px 0" }}>
-        <div className="preview-scale" style={{ transform: "scale(0.75)", transformOrigin: "top center", width: "100%", margin: "0 auto", minHeight: 400 }}>
+      <div style={{ border: "1px solid var(--border)", borderRadius: 16, overflow: "hidden", background: "#e2e8f0", padding: "32px 0" }}>
+        <div style={{ transform: "scale(0.75)", transformOrigin: "top center", width: "100%", margin: "0 auto", minHeight: 400 }}>
           <SelectedTemplate data={resume} />
         </div>
       </div>
