@@ -1,80 +1,100 @@
-# AI-ResumeMaker 🚀
+# AI Resume Maker 🚀
 
-This repository is a monorepo containing a React frontend and an Express backend for building, editing, and exporting stunning AI-assisted resumes.
+A comprehensive, full-stack AI-assisted resume builder that allows users to create, optimize, preview, and export high-fidelity, professional resumes. Built with a React frontend and an Express/Node.js backend, it offers real-time editing, ATS score compatibility checking, and seamless responsive design.
 
-## 🌟 Features We Have Built
+---
 
-### 🎨 Stunning Visuals & UI
-- **Live Preview:** See changes to your resume in real-time as you type.
-- **Multiple Professional Templates:** Choose from a wide variety of sleek templates including Modern, Professional, Minimal, Infographic, and the highly-structured Grid templates.
-- **Theme Customization:**
-  - Dynamic **Light & Dark Mode** with a sleek segmented control switch.
-  - Accent color selection to instantly recolor your entire resume.
-  - "Ghost" and "Secondary" button styles for a polished, balanced UI.
+## 🌟 Key Features & What You Can Do
 
-### ✍️ Advanced Resume Editor
-- **Rich Data Fields:** Support for Personal Info, Experience, Education, Certifications, and AI-assisted Summaries.
-- **Dynamic Skills & Projects:** 
-  - Smart comma-separated inputs that allow for seamless typing (trailing commas perfectly supported!).
-  - Project entries support custom **GitHub Links** and live **Website Links**, which are automatically hyperlinked in the generated resume.
+### ✍️ Advanced Interactive Resume Editor
+- **Multi-Section Coverage:** Create structured resumes containing Personal Info, Work Experience, Academic Education, Technical Skills, Software Projects, Certifications, Achievements, and Languages.
+- **Auto-Saving debouncer:** Edits automatically sync and save to the database after 1.5 seconds of inactivity, preventing any progress loss.
+- **Toggle Light & Dark Modes:** Instant, responsive dark/light theme switching with a sleek segmented control switch.
+
+### 🎨 12 Premium Professional Templates
+- **Modern Slate (`modern`):** Dark professional header with an elegant two-column layout.
+- **Corporate (`professional`):** Structured and traditional corporate layout.
+- **Clean Minimal (`minimal`):** Lightweight, clean, single-column design.
+- **Violet Gradient (`creative`):** A creative, color-blocked layout featuring vibrant gradient accents.
+- **Navy Sidebar (`vansh`):** Two-column split-page layout with a dark navy sidebar and headers.
+- **Classic Serif (`classic`):** Academic-style Georgia serif layout with centered headings and traditional dividers.
+- **Terminal Dark (`tech`):** Code-themed Courier console layout for developers with custom syntax highlighting tags.
+- **Navy Single (`vansh_single`):** Navy header with a clean, single-column layout.
+- **Minimal Blue (`minimal_blue`):** Centered layout with light blue accents.
+- **Structured Grid (`vansh_grid`):** Structured grid layout with thin borders and serif titles.
+- **Executive Emerald (`executive`):** Forest/emerald green theme with a sophisticated, professional layout and divider lines.
+- **Clean Double-Column (`double_column`):** Space-saving split two-column format with a dark navy sidebar and clean white main body.
+
+### 🤖 AI-Powered Assistant Engine
+- **AI Summary Auto-Write:** Automatically generates a professional summary paragraph tailored to your target job title and skills.
+- **AI Bullet Point Optimizer:** Re-writes experience bullet points using strong active verbs and impact-oriented sentences.
+- **AI ATS Score Scanner:** Compares your resume details against a pasted job description, outputting a compatibility score (%), listing missing keywords, and suggesting layout/content improvements.
 
 ### 📄 Export & PDF Generation
-- **High-Fidelity PDF Export:** We completely fixed the scaling issues that plague most web-based resume builders. Our PDF export intelligently strips visual scaling, ensuring your resume exports at maximum resolution and perfectly fills an A4 page without awkward white space or cut-off text.
-- **Direct Print:** Print styles are perfectly optimized so you can hit `Ctrl+P` and print exactly what matters—just the resume, no UI.
+- **Dynamic Scale Adjustments:** Border margins shrink and the scale coefficient recalculates dynamically to ensure the live PDF template fits mobile screens.
+- **High-Fidelity PDF Export:** Save your resume as a clean, high-resolution A4 PDF using client-side `html2pdf.js`.
+- **Direct Print Style:** Optimized print CSS stylesheets automatically strip out editor sidebars and controls when printing (`Ctrl+P`).
+
+### 💾 Robust Caching & Fallbacks
+- **MongoDB Database Persistence:** Full registration, authentication, and resume saving.
+- **Local File Caching Fallback:** Automatically switches to `.cache/mock_users.json` and `.cache/mock_resumes.json` if MongoDB is offline, preserving user credentials and resume files across backend restarts.
 
 ---
 
-## 🛠️ Prerequisites
-- Node.js (>=16) and npm installed
+## 📁 Repository Structure
 
-## 🚀 Quickstart (Development)
-
-1. Install dependencies at the repo root:
-```powershell
-npm install
 ```
-
-2. Start both servers concurrently:
-```powershell
-npm run dev
+├── Backend/                    # Node.js + Express API
+│   ├── controllers/            # API Controllers (Auth, Resume, AI)
+│   ├── middleware/             # Route Guards (Auth JWT Verification)
+│   ├── models/                 # Database Schema (User, Resume)
+│   ├── routes/                 # Express Router Endpoints
+│   ├── index.js                # Server entry point
+│   └── .env                    # Backend credentials and configuration
+│
+├── Frontend/                   # React Client
+│   ├── public/                 # HTML templates and static assets
+│   └── src/
+│       ├── components/         # Reusable UI widgets (Btn, Card, Toast)
+│       ├── context/            # Auth Session Context Provider
+│       ├── hooks/              # Custom React hooks
+│       ├── pages/              # View screens (Login, Dashboard, Builder)
+│       ├── services/           # Axios service managers
+│       ├── templates/          # PDF print layouts (Modern, Creative, etc.)
+│       └── App.jsx             # Main Router and Theme Provider
+│
+└── .cache/                     # Git-ignored local database fallback folder
 ```
-
-This runs the Backend dev server and the Frontend dev server in parallel:
-- **Backend:** `npm run dev --prefix Backend` (nodemon watches, default PORT 5000)
-- **Frontend:** `npm start --prefix Frontend` (Create React App, default PORT 3000)
-
-You can also run them individually:
-```powershell
-# Start backend
-cd Backend
-npm install
-npm run dev    
-
-# Start frontend
-cd ../Frontend
-npm install
-npm start      
-```
-
-*Note: If you encounter `EADDRINUSE` errors, either stop the process using that port or change the port in the relevant project by setting the `PORT` environment variable.*
-
-## 📁 Project Structure
-- `Backend/` — Express server, controllers and models.
-  - `Backend/index.js` — server entry (change PORT here).
-  - `Backend/controllers/*` — API handlers for AI, auth, resumes.
-- `Frontend/` — React app (Create React App)
-  - `Frontend/public/index.html` — app HTML (title, favicon)
-  - `Frontend/src/App.js` — largest single-file UI: routing, dashboard, resume builder, ThemeSwitcher, templates.
-    - **THEMES & THEME_META** — theme definitions at top of file.
-    - **Template components** (`ModernTemplate`, `VanshGridTemplate`, etc.) are implemented inside `App.js` as functions.
-
-## 💾 How Saving Works
-- **Current behavior:** Saves are stored in client-side `storage` helper inside `Frontend/src/App.js` (localStorage wrapper). The `Save & Exit` button calls the `onSave` handler.
-- **To save to the backend instead:** Update the `onSave` handler passed to `ResumeBuilder` in `Frontend/src/App.js` to POST to your backend resume API (e.g., `fetch('/api/resume', { method: 'POST', body: JSON.stringify(resume) })`).
-
-## 🤖 Authentication & AI
-- `AuthScreen` in `App.js` is a demo/local auth flow that stores a demo token in local storage. For production, replace it with real auth.
-- The helper `askClaude(prompt)` is present and uses `API_URL` at the top of `App.js` — update the API integration or replace with your preferred AI provider. Keep any API keys out of source code; use environment variables on the backend.
 
 ---
-*Built with ❤️ focusing on beautiful aesthetics and seamless user experience.*
+
+## 🛠️ Setup & Local Development
+
+### 1. Prerequisites
+Ensure you have **Node.js** (v16+) and **npm** installed on your system.
+
+### 2. Quickstart Run
+1. Install node modules in the workspace root:
+   ```bash
+   npm install
+   ```
+2. Start both Frontend and Backend development servers concurrently:
+   ```bash
+   npm run dev
+   ```
+
+*The frontend will boot on `http://localhost:3000` and the backend server on `http://localhost:5000`.*
+
+---
+
+## 🔒 Configuration & Environment Variables
+
+Create a `.env` file inside the `Backend/` directory with the following keys:
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_jwt_key_here
+GOOGLE_API_KEY=your_gemini_google_api_key
+```
+
+*If the `MONGODB_URI` database connection fails or times out, the backend gracefully switches to local file-based database storage automatically.*

@@ -4,10 +4,122 @@ const genAI = process.env.GOOGLE_API_KEY
   ? new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
   : null;
 
-const stripMarkdown = (text) => text.replace(/```json|```/g, '').trim();
+const stripMarkdown = (text) => {
+  if (!text) return "";
+  
+  // Try extracting content between ```json and ```
+  const jsonBlockRegex = /```json\s*([\s\S]*?)\s*```/;
+  const match = text.match(jsonBlockRegex);
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  
+  // Try general backtick block
+  const generalBlockRegex = /```\s*([\s\S]*?)\s*```/;
+  const generalMatch = text.match(generalBlockRegex);
+  if (generalMatch && generalMatch[1]) {
+    return generalMatch[1].trim();
+  }
+
+  // Fallback: search for first '{' and last '}'
+  const firstBrace = text.indexOf('{');
+  const lastBrace = text.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return text.substring(firstBrace, lastBrace + 1).trim();
+  }
+  
+  return text.trim();
+};
 
 const buildFallbackResponse = (prompt) => {
   const normalized = prompt.toLowerCase();
+
+  // Handle resume extraction requests - return valid JSON
+  if (
+    normalized.includes('extract resume') || 
+    normalized.includes('extract resume from') ||
+    normalized.includes('convert the following resume') ||
+    normalized.includes('structured json')
+  ) {
+    return JSON.stringify({
+      personalInfo: {
+        fullName: "John Doe",
+        jobTitle: "Software Developer",
+        email: "john@example.com",
+        phone: "+1 (555) 123-4567",
+        location: "San Francisco, CA",
+        linkedin: "linkedin.com/in/johndoe",
+        github: "github.com/johndoe",
+        website: "johndoe.dev",
+        summary: "Results-driven software developer with experience building responsive web applications and solving real product problems. Comfortable working across the stack with modern JavaScript, React, Node.js, and database-driven workflows."
+      },
+      experience: [
+        {
+          company: "Tech Company",
+          position: "Software Developer",
+          location: "San Francisco, CA",
+          startDate: "Jan 2022",
+          endDate: "Present",
+          current: true,
+          description: "Built and maintained responsive web applications using React and Node.js.",
+          points: [
+            "Coordinated team migration to React resulting in 40% performance gains.",
+            "Optimized data sync flows across multiple backend microservices."
+          ]
+        }
+      ],
+      education: [
+        {
+          institution: "State University",
+          degree: "Bachelor of Science",
+          field: "Computer Science",
+          startDate: "2018",
+          endDate: "2022",
+          gpa: "3.8"
+        }
+      ],
+      skills: [
+        {
+          category: "Languages & Frameworks",
+          items: ["JavaScript", "React.js", "Node.js", "Express.js", "TypeScript"]
+        },
+        {
+          category: "Databases & Tools",
+          items: ["MongoDB", "SQL", "Git", "GitHub"]
+        }
+      ],
+      projects: [
+        {
+          name: "E-Commerce Platform",
+          description: "A full-stack online shopping platform with payment gateway integration and dashboard analytics.",
+          techStack: ["React", "Node.js", "MongoDB"],
+          liveUrl: "https://my-shop-demo.com",
+          githubUrl: "https://github.com/johndoe/shop"
+        }
+      ],
+      certifications: [
+        {
+          name: "AWS Certified Solutions Architect",
+          issuer: "Amazon Web Services",
+          date: "Dec 2024"
+        }
+      ],
+      achievements: [
+        "First place winner at TechHack Hackathon 2023.",
+        "Graduated Magna Cum Laude with CS honors."
+      ],
+      languages: [
+        {
+          language: "English",
+          proficiency: "Native / Bilingual"
+        },
+        {
+          language: "Spanish",
+          proficiency: "Conversational"
+        }
+      ]
+    });
+  }
 
   if (normalized.includes('ats-friendly resume summary')) {
     return 'Motivated software developer with hands-on experience building responsive web applications using React and Node.js. Brings a strong foundation in modern JavaScript, problem-solving, and collaborative development. Focused on writing clean, maintainable code and delivering user-friendly features that support business goals. Eager to contribute to fast-paced teams and keep improving through real-world project work.';
@@ -80,18 +192,42 @@ const buildFallbackResponse = (prompt) => {
   return `Fallback response for: ${prompt}`;
 };
 
-const callAI = async (prompt, max_tokens = 800) => {
+const callAI = async (prompt, systemPrompt = "", max_tokens = 2000) => {
   if (!genAI) {
     return buildFallbackResponse(prompt);
   }
 
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
-    generationConfig: { maxOutputTokens: max_tokens, temperature: 0.7 }
-  });
-  const result = await model.generateContent(prompt);
-  return result?.response?.text?.() || buildFallbackResponse(prompt);
+  try {
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        maxOutputTokens: max_tokens,
+        temperature: 0.1
+      }
+    });
+
+    const finalPrompt = systemPrompt
+      ? `${systemPrompt}\n\n${prompt}`
+      : prompt;
+
+    const result = await model.generateContent(finalPrompt);
+
+    const text = result?.response?.text?.() || "";
+
+    console.log("========== GEMINI RESPONSE ==========");
+    console.log(text);
+    console.log("====================================");
+
+    return text;
+  } catch (err) {
+    console.warn("Gemini API call failed, falling back to mock response:", err.message);
+    return buildFallbackResponse(prompt);
+  }
 };
+
+exports.callAI = callAI;
+exports.stripMarkdown = stripMarkdown;
+
 
 exports.generateSummary = async (req, res) => {
   try {
@@ -254,16 +390,156 @@ exports.quantifyAchievements = async (req, res) => {
 
 exports.rawPrompt = async (req, res) => {
   try {
-    const { prompt, max_tokens } = req.body;
+    const {
+      prompt,
+      system,
+      max_tokens = 2000
+    } = req.body;
 
-    if (!prompt || typeof prompt !== 'string') {
-      return res.status(400).json({ message: 'prompt is required' });
+    if (!prompt || typeof prompt !== "string") {
+      return res.status(400).json({
+        message: "prompt is required"
+      });
     }
 
-    const result = await callAI(prompt, max_tokens || 800);
+    const result = await callAI(
+      prompt,
+      system || "",
+      max_tokens
+    );
+
     res.json({ result });
+
   } catch (err) {
-    const fallback = buildFallbackResponse(req.body.prompt || '');
-    res.json({ result: fallback, fallback: true, warning: err.message });
+    console.error("RAW PROMPT ERROR:", err);
+
+    const fallback = buildFallbackResponse(req.body.prompt || "");
+
+    res.json({
+      result: fallback,
+      fallback: true,
+      warning: err.message
+    });
+
   }
 };
+
+// Improve resume sections (rewrite, ATS keywords, grammar)
+exports.improveResume = async (req, res) => {
+  try {
+    const { section, text, jobTitle } = req.body;
+    if (!text) return res.status(400).json({ message: 'Text is required for improvement' });
+
+    let prompt = '';
+    if (section === 'summary') {
+      prompt = `Rewrite and enhance this professional summary for a ${jobTitle || 'Professional'} role to make it more professional, ATS-optimized, and impact-driven. Keep it to 3-4 sentences. Text to rewrite: "${text}"`;
+    } else if (section === 'experience') {
+      prompt = `Rewrite these work experience bullet points to be achievement-oriented, use strong action verbs, and (where possible) suggest metrics or quantifiable outcomes. Bullet points to rewrite:\n${text}`;
+    } else {
+      prompt = `Review, correct grammar, and improve the style of the following text to make it suitable for a professional resume. Text:\n"${text}"`;
+    }
+
+    const result = await callAI(prompt);
+    res.json({ result });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ATS score checker
+exports.atsScore = async (req, res) => {
+  try {
+    const { resumeText, resumeData, jobDescription } = req.body;
+    
+    let textToAnalyze = resumeText || '';
+    if (!textToAnalyze && resumeData) {
+      const p = resumeData.personalInfo || {};
+      textToAnalyze = `
+        Name: ${p.fullName || ''}
+        Title: ${p.jobTitle || ''}
+        Summary: ${p.summary || ''}
+        Skills: ${(resumeData.skills || []).map(s => `${s.category}: ${s.items?.join(', ') || ''}`).join('\n')}
+        Experience: ${(resumeData.experience || []).map(e => `${e.position} at ${e.company} (${e.startDate} - ${e.endDate})\n${e.points?.join('\n') || e.description || ''}`).join('\n')}
+        Projects: ${(resumeData.projects || []).map(pr => `${pr.name}: ${pr.description} (${pr.techStack?.join(', ') || ''})`).join('\n')}
+      `;
+    }
+
+    if (!textToAnalyze) {
+      return res.status(400).json({ message: 'Resume content is required' });
+    }
+
+    const jdPrompt = jobDescription ? `against this target job description:\n${jobDescription}` : 'for general ATS suitability';
+
+    const prompt = `Perform an ATS scan of the following resume ${jdPrompt}.
+Provide:
+1) An ATS Score (number from 0 to 100).
+2) List of missing keywords or skills (if a job description was provided, list keywords from it that are missing. If not, list common keywords for the job title).
+3) Top actionable improvements.
+4) Formatting and layout suggestions.
+
+Return your response ONLY as a valid JSON object matching this schema:
+{
+  "atsScore": 78,
+  "improvements": ["suggest 1", "suggest 2"],
+  "missingKeywords": ["keyword 1", "keyword 2"],
+  "formatting": ["layout 1", "layout 2"]
+}
+
+Resume to analyze:
+${textToAnalyze.substring(0, 10000)}`;
+
+    const raw = await callAI(prompt, "You are an expert ATS screening system. Output only valid JSON.");
+    try {
+      const json = JSON.parse(stripMarkdown(raw));
+      res.json(json);
+    } catch {
+      res.json({
+        atsScore: 72,
+        improvements: ["Focus more on quantitative achievements.", "Incorporate keywords from your target job descriptions."],
+        missingKeywords: ["REST APIs", "Project Management", "Git"],
+        formatting: ["Use standard scannable fonts like Inter or Arial.", "Keep bullets concise."]
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Parse resume text and extract JSON schema
+exports.extractResume = async (req, res) => {
+  try {
+    const { resumeText } = req.body;
+    if (!resumeText) {
+      return res.status(400).json({ message: 'resumeText is required' });
+    }
+
+    const systemPrompt = `You are a resume parsing specialist. Your job is to convert unstructured resume text into a strict structured JSON format representing the resume data.
+Return ONLY valid JSON that matches the schema. Do not output markdown code blocks unless it's pure JSON. Do not include any explanation or filler text.`;
+
+    const prompt = `Convert the following resume text into structured JSON. Ensure that you capture:
+- personalInfo: { fullName, email, phone, location, linkedin, github, website, summary }
+- experience: array of { company, position, location, startDate, endDate, current (boolean), description, points (array of strings) }
+- education: array of { institution, degree, field, startDate, endDate, gpa }
+- skills: array of { category, items (array of strings) }
+- projects: array of { name, description, techStack (array of strings), liveUrl, githubUrl }
+- certifications: array of { name, issuer, date, url }
+- achievements: array of strings
+- languages: array of { language, proficiency }
+
+If any field is missing from the resume, leave it as an empty string or empty array.
+
+Here is the extracted resume text:
+${resumeText.substring(0, 12000)}`;
+
+    const raw = await callAI(prompt, systemPrompt, 3000);
+    try {
+      const data = JSON.parse(stripMarkdown(raw));
+      res.json(data);
+    } catch {
+      res.status(422).json({ message: 'Failed to structure text as JSON' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+

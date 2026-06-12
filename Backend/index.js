@@ -12,6 +12,7 @@ const app = express();
 app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 
+mongoose.set('bufferCommands', false);
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB error:', err));
@@ -19,6 +20,7 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/ai', aiRoutes);
+
 
 app.get('/', (req, res) => res.send('AI Resume Builder API is running!'));
 app.get('/health', (req, res) => res.json({ status: 'OK' }));

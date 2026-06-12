@@ -3,10 +3,10 @@ const auth = require('../middleware/auth');
 const {
   generateSummary, generateObjective, generateProjects,
   generateSkills, reviewResume, generateCoverLetter,
-  generateInterviewQuestions, generateLinkedInBio, rawPrompt
+  generateInterviewQuestions, generateLinkedInBio, rawPrompt,
+  improveResume, atsScore, extractResume,
+  tailorResume, extractSkills, quantifyAchievements
 } = require('../controllers/aiController');
-
-const { tailorResume, extractSkills, quantifyAchievements } = require('../controllers/aiController');
 
 // Allow raw prompt route without auth (useful for frontend dev/testing).
 router.post('/raw', rawPrompt);
@@ -14,6 +14,7 @@ router.post('/raw', rawPrompt);
 // Protect other AI routes with auth
 router.use(auth);
 router.post('/summary', generateSummary);
+router.post('/generate-summary', generateSummary);
 router.post('/objective', generateObjective);
 router.post('/projects', generateProjects);
 router.post('/skills', generateSkills);
@@ -24,5 +25,10 @@ router.post('/quantify', quantifyAchievements);
 router.post('/cover-letter', generateCoverLetter);
 router.post('/interview-questions', generateInterviewQuestions);
 router.post('/linkedin-bio', generateLinkedInBio);
+
+// New required routes
+router.post('/improve-resume', improveResume);
+router.post('/ats-score', atsScore);
+router.post('/extract-resume', extractResume);
 
 module.exports = router;
