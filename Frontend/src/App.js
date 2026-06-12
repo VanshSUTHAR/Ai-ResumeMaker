@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // Proxy AI requests through backend to avoid CORS and keep API keys server-side
-const API_URL = "/api/ai/raw";
+const API_URL = process.env.REACT_APP_API_URL 
+  ? `${process.env.REACT_APP_API_URL.replace(/\/$/, '')}/api/ai/raw` 
+  : "/api/ai/raw";
+
 
 const emptyResume = () => ({
   id: Date.now(),
