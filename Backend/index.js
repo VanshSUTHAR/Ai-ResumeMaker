@@ -20,7 +20,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/ai', aiRoutes);
 
+app.get('/', (req, res) => res.send('AI Resume Builder API is running!'));
 app.get('/health', (req, res) => res.json({ status: 'OK' }));
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
