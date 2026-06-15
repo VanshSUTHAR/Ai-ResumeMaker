@@ -17,10 +17,31 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB error:', err));
 
+// Middleware to ensure DB connection is ready before processing requests
+app.use(async (req, res, next) => {
+  if (process.env.MONGODB_URI && mongoose.connection.readyState !== 1) {
+    try {
+      if (mongoose.connection.readyState === 2) {
+        // Wait for the existing connection attempt to complete
+        await new Promise((resolve) => {
+          mongoose.connection.once('connected', resolve);
+          mongoose.connection.once('error', resolve);
+          setTimeout(resolve, 5000); // 5s safety timeout
+        });
+      } else {
+        // Start connection if disconnected
+        await mongoose.connect(process.env.MONGODB_URI);
+      }
+    } catch (err) {
+      console.error('Database connection error in middleware:', err);
+    }
+  }
+  next();
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/ai', aiRoutes);
-
 
 app.get('/', (req, res) => res.send('AI Resume Builder API is running!'));
 app.get('/health', (req, res) => res.json({ status: 'OK' }));
