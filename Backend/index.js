@@ -9,13 +9,15 @@ const aiRoutes = require('./routes/ai');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
-app.use(express.json({ limit: '10mb' }));
+// Middleware
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || '*',
+    credentials: true,
+  })
+);
 
-mongoose.set('bufferCommands', false);
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB error:', err));
+app.use(express.json({ limit: '10mb' }));
 
 // Middleware to ensure DB connection is ready before processing requests
 app.use(async (req, res, next) => {
@@ -39,21 +41,62 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/ai', aiRoutes);
 
-app.get('/', (req, res) => res.send('AI Resume Builder API is running!'));
-app.get('/health', (req, res) => res.json({ status: 'OK' }));
+app.get('/', (req, res) => {
+  res.send('AI Resume Builder API is running!');
+});
 
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    database:
+      mongoose.connection.readyState === 1
+        ? 'Connected'
+        : 'Disconnected',
+  });
+});
 
+// Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Server error', error: err.message });
+  console.error(err);
+
+  res.status(500).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+  });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Database Connection & Server Start
+const startServer = async () => {
+  try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is missing in .env file');
+    }
+
+    console.log('Connecting to MongoDB...');
+
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+    });
+
+    console.log('✅ MongoDB Connected');
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ MongoDB Connection Failed');
+    console.error(error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;
-

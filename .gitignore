@@ -4,9 +4,6 @@ Frontend/node_modules/
 Backend/node_modules/
 
 # Environment variables
-.env
-.env.*
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -26,7 +23,6 @@ yarn-error.log*
 Thumbs.db
 
 # IDE / editor
-.vscode/
 .idea/
 *.suo
 *.ntvs*
@@ -42,3 +38,4 @@ coverage/
 /.pnp
 /.pnp.js
 
+config.bat
