@@ -664,7 +664,14 @@ export default function BuilderPage({ dark, setDark }) {
                 toast.error("Failed to save progress.");
               }
             }} size="sm" variant="primary" style={{ flex: 1 }}>Save & Exit</Btn>
-            <Btn onClick={() => navigate('/')} size="sm" variant="secondary" style={{ flex: 1 }}>Exit</Btn>
+            <Btn onClick={async () => {
+              try {
+                await resumeService.update(id, resume);
+              } catch (err) {
+                console.error("Save on exit error:", err);
+              }
+              navigate('/');
+            }} size="sm" variant="secondary" style={{ flex: 1 }}>Exit</Btn>
           </div>
           {saved && <p style={{ fontSize: 11, color: "var(--success)", fontWeight: 600, textAlign: "center" }}>✓ Saved to Cloud</p>}
         </div>
