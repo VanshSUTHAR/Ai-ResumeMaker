@@ -1,22 +1,53 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import Card from './Card';
 import Btn from './Btn';
 
 export default function ResumeCard({ resume, onEdit, onDelete }) {
   const [deleting, setDeleting] = useState(false);
 
-  const handleDelete = async (e) => {
+  const handleDelete = (e) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${resume.title || 'Untitled'}"?`)) {
-      setDeleting(true);
-      try {
-        await onDelete(resume._id || resume.id);
-      } catch (err) {
-        console.error('Delete error:', err);
-      } finally {
-        setDeleting(false);
+    Swal.fire({
+      title: 'Delete Resume?',
+      text: `Are you sure you want to delete "${resume.title || 'Untitled'}"? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'var(--danger, #d32f2f)',
+      cancelButtonColor: 'var(--text-3, #777777)',
+      confirmButtonText: 'Yes, Delete',
+      cancelButtonText: 'Cancel',
+      background: 'var(--surface, #ffffff)',
+      color: 'var(--text, #000000)',
+      iconColor: '#d32f2f',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setDeleting(true);
+        try {
+          await onDelete(resume._id || resume.id);
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Your resume has been deleted.',
+            icon: 'success',
+            confirmButtonColor: 'var(--accent-2, #C8A96E)',
+            background: 'var(--surface, #ffffff)',
+            color: 'var(--text, #000000)',
+          });
+        } catch (err) {
+          console.error('Delete error:', err);
+          Swal.fire({
+            title: 'Error!',
+            text: 'Failed to delete the resume.',
+            icon: 'error',
+            confirmButtonColor: 'var(--accent-2, #C8A96E)',
+            background: 'var(--surface, #ffffff)',
+            color: 'var(--text, #000000)',
+          });
+        } finally {
+          setDeleting(false);
+        }
       }
-    }
+    });
   };
 
   const formattedDate = resume.updatedAt 
