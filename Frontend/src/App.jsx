@@ -295,6 +295,112 @@ const appCss = `
     .ats-grid { grid-template-columns: 1fr; }
   }
 
+  /* SweetAlert2 Flat Professional Theme */
+  .swal2-backdrop-show {
+    background: rgba(0, 0, 0, 0.45) !important;
+  }
+  .swal2-popup {
+    font-family: 'DM Sans', -apple-system, sans-serif !important;
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    padding: 24px !important;
+    width: 360px !important;
+  }
+  .swal2-title {
+    font-family: 'DM Sans', sans-serif !important;
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    margin-top: 8px !important;
+    margin-bottom: 6px !important;
+    text-align: center !important;
+  }
+  .swal2-html-container {
+    color: var(--text-2) !important;
+    font-size: 13.5px !important;
+    line-height: 1.5 !important;
+    margin: 0 0 20px 0 !important;
+    text-align: center !important;
+  }
+  .swal2-actions {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+  .swal2-confirm.swal2-styled {
+    background-color: var(--text);
+    color: var(--bg);
+    border: 1px solid transparent;
+    border-radius: var(--radius) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease !important;
+    margin: 0 !important;
+  }
+  .swal2-confirm.swal2-styled:hover {
+    filter: brightness(0.9) !important;
+    background-image: none !important;
+  }
+  .swal2-confirm.swal2-styled:focus {
+    box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--border-focus) !important;
+    outline: none !important;
+  }
+  .swal2-cancel.swal2-styled {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease !important;
+    margin: 0 !important;
+  }
+  .swal2-cancel.swal2-styled:hover {
+    background-color: var(--surface-2) !important;
+    background-image: none !important;
+  }
+  .swal2-cancel.swal2-styled:focus {
+    box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--border-focus) !important;
+    outline: none !important;
+  }
+  .swal2-icon {
+    transform: scale(0.6) !important;
+    transform-origin: center !important;
+    margin: -10px auto 4px auto !important;
+  }
+  .swal2-icon.swal2-warning {
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+  }
+  .swal2-icon.swal2-success {
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+  }
+  .swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--success) !important;
+  }
+  .swal2-icon.swal2-success .swal2-success-ring {
+    border: 3px solid var(--success-light) !important;
+  }
+  .swal2-icon.swal2-error {
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+  }
+  .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: var(--danger) !important;
+  }
+
 `;
 
 export default function App() {
@@ -308,8 +414,15 @@ export default function App() {
 
   const activeTheme = TOKENS[dark ? "dark" : "light"];
 
+  const themeVarsCss = `
+    :root {
+      ${Object.entries(activeTheme).map(([key, val]) => `${key}: ${val};`).join('\n')}
+    }
+  `;
+
   return (
-    <div className="app-root" style={activeTheme}>
+    <div className="app-root">
+      <style>{themeVarsCss}</style>
       <style>{appCss}</style>
       <Toast />
       <AuthProvider>

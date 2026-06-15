@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^10.0.0"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
     "url": "https://github.com/VanshSUTHAR/Ai-ResumeMaker/issues"
   },
   "homepage": "https://github.com/VanshSUTHAR/Ai-ResumeMaker#readme",
-  "devDependencies": {
-    "concurrently": "^10.0.0"
+  "dependencies": {
+    "mongodb": "^7.3.0",
+    "mongoose": "^9.7.0"
   }
 }

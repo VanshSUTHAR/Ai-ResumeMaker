@@ -3,8 +3,13 @@ import storage from '../utils/storage';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
 
+const getBaseURL = () => {
+  if (!API_URL) return '/api';
+  return API_URL.endsWith('/') ? `${API_URL}api` : `${API_URL}/api`;
+};
+
 const api = axios.create({
-  baseURL: `${API_URL}api`,
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
