@@ -627,7 +627,7 @@ export default function BuilderPage({ dark, setDark }) {
       <aside className="builder-side">
         {/* Logo */}
         <div style={{ padding: "18px 20px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 16 }}>📄</span>
+          <img src="/image.png" alt="AI Resume Maker Logo" style={{ width: 20, height: 20, borderRadius: 4, objectFit: 'contain' }} />
           <span className="display" style={{ fontWeight: 400, fontSize: 16, color: "var(--text)" }}>Resume Builder</span>
         </div>
 

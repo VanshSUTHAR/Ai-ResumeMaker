@@ -27,7 +27,7 @@ export default function ResumeCard({ resume, onEdit, onDelete }) {
     <Card className="lift" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} onClick={() => onEdit(resume)}>
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-          <span style={{ fontSize: 24 }}>📄</span>
+          <img src="/image.png" alt="AI Resume Maker Logo" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'contain' }} />
           <span className="tag" style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
             {resume.template || 'modern'}
           </span>

@@ -80,7 +80,7 @@ export default function DashboardPage({ dark, setDark }) {
       {/* Navbar */}
       <header className="db-header">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>📄</span>
+          <img src="/image.png" alt="AI Resume Maker Logo" style={{ width: 24, height: 24, borderRadius: 6, objectFit: 'contain' }} />
           <span className="display" style={{ fontWeight: 700, fontSize: 18, color: "var(--text)" }}>AI Resume Maker</span>
         </div>
 

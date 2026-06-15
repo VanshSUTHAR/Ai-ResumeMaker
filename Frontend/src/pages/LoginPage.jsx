@@ -53,7 +53,7 @@ export default function LoginPage({ dark, setDark }) {
 
         <div style={{ position: "relative", zIndex: 2 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 72 }}>
-            <span style={{ fontSize: 22 }}>📄</span>
+            <img src="/image.png" alt="AI Resume Maker Logo" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'contain' }} />
             <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: "0.02em" }}>AI Resume Maker</span>
           </div>
           <h1 className="display" style={{ fontSize: 52, fontWeight: 300, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: 20 }}>
